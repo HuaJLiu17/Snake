@@ -1,4 +1,13 @@
-const io = require('socket.io')();   //imports a function that when executed grabs the socket.io object
+const http = require("http");
+const socket_io = require("socket.io");
+
+const httpServer = http.createServer();
+const io = new socket_io.Server(httpServer, {
+  cors: {
+    origin: "http://127.0.0.1:8080",
+  },
+});
+  
 const { initGame, gameLoop, getUpdatedVelocity } = require('./game');
 const { FRAME_RATE } = require('./constants');
 const { makeid } = require('./utils')
@@ -6,41 +15,42 @@ const { makeid } = require('./utils')
 const state = {};
 const clientRooms = {}; //lets us look up the roomName of a particular client id. 
 
-io.on('connection', client => {        //gives us a client object and allows us to communicate back to the client that is connected
+let counter = 0;
+
+io.on('connection', client => { 
+    counter++ 
+    console.log(counter)       //gives us a client object and allows us to communicate back to the client that is connected
     
     client.on('keydown', handleKeyDown);
     client.on('newGame', handleNewGame);
     client.on('joinGame', handleJoinGame);
 
     function handleJoinGame() {
-        const room = io.sockets.adapter.rooms[gameCode];
-
-        let allUsers;
-        if (room) {
-            allUsers = room.sockets;
-        }
-
-        let numClients = 0;
-        if(allUsers) {
-            numClients = Object.keys(allUsers).length;
-        }
-
-        if (numClients === 0) {
-            client.emit('unknownGame');
-            return;
-        } else if (numClients > 1) {
-            client.emit('tooManyPlayers');
-            return;
-        } 
-
-        clientRooms[client.id] = gameCode;
-
-        client.join(gameCode);
-        client.number = 2;
-        client.emit('init', 2);
-
-        startGameInterval(gameCode);
+        const room = io.sockets.adapter.rooms.get(roomName);
+    
+    let numClients = 0;
+    if (room) {
+        numClients = room.size;
     }
+
+    if (numClients === 0) {
+        client.emit('unknownCode');
+        return;
+    } else if (numClients > 1) {
+        client.emit('tooManyPlayers');
+        return;
+    }
+
+
+    clientRooms[client.id] = roomName;
+
+    client.join(roomName);
+    client.number = 2;
+    client.emit('init', 2);
+
+    startGameInterval(roomName);
+    }
+    
 
     function handleNewGame() {
         let roomName = makeid(5); //makes a 5 character id for the game room

@@ -45,7 +45,6 @@ function createGameState() {
         }],
         food: {},
         gridsize: GRID_SIZE,
-        active: true,
     };
 }
 
