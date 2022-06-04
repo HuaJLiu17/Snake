@@ -1,12 +1,12 @@
-const http = require("http");
-const socket_io = require("socket.io");
+// const http = require("http");
+const socket_io = require("socket.io")();
 
-const httpServer = http.createServer();
-const io = new socket_io.Server(httpServer, {
-  cors: {
-    origin: "http://127.0.0.1:8080",
-  },
-});
+// const httpServer = http.createServer();
+// const io = new socket_io.Server(httpServer, {
+//   cors: {
+//     origin: "http://127.0.0.1:8080",
+//   },
+// });
   
 const { initGame, gameLoop, getUpdatedVelocity } = require('./game');
 const { FRAME_RATE } = require('./constants');
@@ -50,7 +50,7 @@ io.on('connection', client => {
 
     startGameInterval(roomName);
     }
-    
+
 
     function handleNewGame() {
         let roomName = makeid(5); //makes a 5 character id for the game room
@@ -110,4 +110,4 @@ function emitGameOver(roomName, winner) {
         .emit('gameOver', JSON.stringify({ winner }));
 }
 
-io.listen(3000);
+io.listen(process.env.PORT || 3000);
