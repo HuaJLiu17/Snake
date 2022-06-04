@@ -1,5 +1,5 @@
 // const http = require("http");
-const socket_io = require("socket.io")();
+const io = require("socket.io")();
 
 // const httpServer = http.createServer();
 // const io = new socket_io.Server(httpServer, {
@@ -15,11 +15,9 @@ const { makeid } = require('./utils')
 const state = {};
 const clientRooms = {}; //lets us look up the roomName of a particular client id. 
 
-let counter = 0;
 
-io.on('connection', client => { 
-    counter++ 
-    console.log(counter)       //gives us a client object and allows us to communicate back to the client that is connected
+
+io.on('connection', client => {        //gives us a client object and allows us to communicate back to the client that is connected
     
     client.on('keydown', handleKeyDown);
     client.on('newGame', handleNewGame);
