@@ -1,8 +1,11 @@
+// import { io } from 'socket.io-client'
+const socket = io("http://localhost:3000");
+
+
+
 const BG_COLOUR = '#231f20';
 const SNAKE_COLOUR = '#c2c2c2';
 const FOOD_COLOUR = '#e66916'
-
-const socket = io('http://localhost:3000');
 
 socket.on('init', handleInit); //The .on() method attaches event handlers to the currently selected set of elements in the jQuery object
 socket.on('gameState', handleGameState);
